@@ -16,16 +16,21 @@ canv.grid(row=0,column=0)
 
 
 def alarm_time():
+    global STOP_ALARM
+    STOP_ALARM = False
     global snooz_time
     global st
     global p
-    st = snooz_time.get()
+    try:
+        st=snooz_time.get()
+    except EclError:
+        st=0
     Alarm_Time = f'{hour.get()}:{min.get()}:{sec.get()}'
     Tone = song.get()
     if os.path.exists(Tone):
         p = vlc.MediaPlayer(r"%s"%Tone)
     else:
-        p = vlc.MediaPlayer(r'C:\Users\hp\OneDrive\Ra.wav')
+        p = vlc.MediaPlayer(r'Awesomemorning Alarm.mp3')
     print(Alarm_Time)  
     while True:
         if Can_alarm:
@@ -37,8 +42,7 @@ def alarm_time():
             p.play()
             time.sleep(0.1)
             threading.Thread(target=Message).start()
-            if st!=0:
-                threading.Thread(target=Snooz).start()
+            threading.Thread(target=Snooz).start()
             break
         
 Can_alarm = False
@@ -69,17 +73,29 @@ def Stop_alarm():
 STOP_ALARM = False
 
 def Snooz():
-    if STOP_ALARM:
-        return
-    time.sleep(st)
-    p.stop()
-    time.sleep(st)
-    if STOP_ALARM:
-        return
-    p.play()
-    Snooz()
+    global st
+    if st!=0:
+        if STOP_ALARM:
+            return
+        time.sleep(15)
+        p.stop()
+        time.sleep(st)
+        if STOP_ALARM:
+            return
+        p.play()
+        Snooz()
+    if st==0:
+        for i in range(7):
+            if STOP_ALARM:
+                return
+            time.sleep(20)
+            p.stop()
+            if STOP_ALARM==True or i==5:
+                return
+            p.play()
+        
     
-img = ImageTk.PhotoImage(Image.open("C:/Users/hp/OneDrive/Pictures/pngtree-clock-time-timepiece-hour-background-picture-image_724407.jpeg"))
+img = ImageTk.PhotoImage(Image.open(r"pngtree-clock-time-timepiece-hour-background-picture-image_724407.jpeg"))
 canv.create_image(0, 0, anchor=NW, image=img)
 
 canv.create_text(64,22, text="Set Alarm :", fill ="white" , font=('Arial',16,'bold')) 
@@ -118,9 +134,8 @@ En5=Entry(Alarm_Tool,textvariable=snooz_time,font=10)
 En5.place(x=27,y=246)
 canv.create_text(131,283, text="Recommendetion : Enter in second ",fill="white",font=('Arial',10))
 
-SetBtn=Button(Alarm_Tool, text='Save',fg='Blue',bg='red',bd='0',font=1,width=5,height=1,command=Al_Tool).place(x=30,y=315)
-SetBtn1=Button(Alarm_Tool, text='Stop',fg='Blue',bg='red',bd='0',font=1,width=5,height=1,command=Stop_alarm).place(x=141,y=315)
-CnclBtn=Button(Alarm_Tool, text='Cancel Alarm',fg='Blue',bg='red',bd='0',font=1,height=1,command=Cancel_alarm).place(x=250,y=315)
+SetBtn=Button(Alarm_Tool, text='Save',fg='white',bg='red',font=('Arial',15,'bold'),width=5,height=1,command=Al_Tool).place(x=30,y=315)
+SetBtn1=Button(Alarm_Tool, text='Stop',fg='white',bg='red',font=('Arial',15,'bold'),width=5,height=1,command=Stop_alarm).place(x=141,y=315)
+CnclBtn=Button(Alarm_Tool, text='Cancel Alarm',fg='white',bg='red',font=('Arial',15,'bold'),height=1,command=Cancel_alarm).place(x=250,y=315)
 Alarm_Tool.mainloop()
-
 
