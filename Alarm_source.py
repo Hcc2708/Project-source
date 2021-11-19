@@ -23,7 +23,7 @@ def alarm_time():
     global p
     try:
         st=snooz_time.get()
-    except EclError:
+    except TclError:
         st=0
     Alarm_Time = f'{hour.get()}:{min.get()}:{sec.get()}'
     Tone = song.get()
